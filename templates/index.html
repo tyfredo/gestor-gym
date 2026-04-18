@@ -2,37 +2,40 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gym System - Admin & Consulta</title>
+    <title>Gym System UG</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body class="bg-light">
-
     <div class="container py-5">
-        <h2 class="text-center mb-5 fw-bold text-dark">SISTEMA DE INFORMACIÓN - GYM</h2>
-
+        <h2 class="text-center mb-5 fw-bold">GESTIÓN DE GIMNASIO - DICIS</h2>
         <div class="row g-4">
             <div class="col-md-6">
                 <div class="card shadow border-0">
-                    <div class="card-header bg-dark text-white p-3">
-                        <h5 class="mb-0">Panel de Administración</h5>
-                    </div>
+                    <div class="card-header bg-dark text-white text-center"><h5>Panel Admin</h5></div>
                     <div class="card-body">
                         <form id="formAdmin">
                             <div class="mb-3">
-                                <label class="form-label fw-bold">ID del Socio</label>
-                                <input type="text" id="adminId" class="form-control" placeholder="Ej: SOC-001" required>
+                                <label class="form-label fw-bold">ID Socio</label>
+                                <input type="text" id="adminId" class="form-control" required>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label fw-bold">Nombre Completo</label>
-                                <input type="text" id="adminNombre" class="form-control" placeholder="Nombre del cliente" required>
+                                <label class="form-label fw-bold">Nombre</label>
+                                <input type="text" id="adminNombre" class="form-control" required>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label fw-bold">Fecha de Último Pago</label>
+                                <label class="form-label fw-bold">Recepcionista</label>
+                                <select id="adminRecepcionista" class="form-select">
+                                    <option value="1">Gerardo</option>
+                                    <option value="2">Ana</option>
+                                    <option value="3">Carlos</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Fecha Pago</label>
                                 <input type="date" id="adminFecha" class="form-control" required>
                             </div>
-                            <button type="submit" class="btn btn-dark w-100 fw-bold">Guardar/Actualizar Socio</button>
+                            <button type="submit" class="btn btn-dark w-100">Actualizar Pago</button>
                         </form>
                     </div>
                 </div>
@@ -40,29 +43,20 @@
 
             <div class="col-md-6">
                 <div class="card shadow border-0">
-                    <div class="card-header bg-primary text-white p-3">
-                        <h5 class="mb-0">Consulta de Estatus</h5>
-                    </div>
+                    <div class="card-header bg-primary text-white text-center"><h5>Consulta</h5></div>
                     <div class="card-body">
                         <form id="formConsulta">
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Ingresar ID del Socio</label>
-                                <div class="input-group">
-                                    <input type="text" id="consultaId" class="form-control" placeholder="SOC-001" required>
-                                    <button class="btn btn-primary" type="submit">Consultar</button>
-                                </div>
+                            <div class="input-group">
+                                <input type="text" id="consultaId" class="form-control" placeholder="ID Socio">
+                                <button class="btn btn-primary" type="submit">Buscar</button>
                             </div>
                         </form>
-
                         <div id="resultadoConsulta" class="mt-4 d-none">
-                            <div id="alertaEstatus" class="alert shadow-sm" role="alert">
-                                <h4 class="alert-heading" id="resNombre"></h4>
+                            <div id="alertaEstatus" class="alert shadow-sm">
+                                <h4 id="resNombre"></h4>
                                 <hr>
-                                <p id="resMensaje" class="mb-0" style="white-space: pre-line;"></p>
-                                
-                                <button id="btnRenovar" class="btn btn-danger mt-3 w-100 fw-bold d-none">
-                                    Agregar nuevo pago
-                                </button>
+                                <p id="resMensaje" style="white-space: pre-line;"></p>
+                                <button id="btnRenovar" class="btn btn-danger mt-3 w-100 d-none">Agregar nuevo pago</button>
                             </div>
                         </div>
                     </div>
@@ -70,7 +64,6 @@
             </div>
         </div>
     </div>
-
     <script src="/static/js/app.js"></script>
 </body>
 </html>

@@ -1,96 +1,55 @@
 document.addEventListener('DOMContentLoaded', () => {
-    
-    // --- LÓGICA PANEL ADMIN ---
     const formAdmin = document.getElementById('formAdmin');
-    
+    const formConsulta = document.getElementById('formConsulta');
+
+    // GUARDAR PAGO
     formAdmin.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
-        // Armamos el paquete de datos a enviar al servidor
         const datos = {
             id: document.getElementById('adminId').value,
             nombre: document.getElementById('adminNombre').value,
-            fecha: document.getElementById('adminFecha').value
+            fecha: document.getElementById('adminFecha').value,
+            id_recepcionista: document.getElementById('adminRecepcionista').value
         };
 
-        try {
-            // Enviamos los datos a Python mediante método POST
-            const respuesta = await fetch('/api/guardar', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(datos)
-            });
-            
-            const resultado = await respuesta.json();
-            
-            if (resultado.success) {
-                alert(`Socio ${datos.id} guardado correctamente en la base de datos.`);
-                formAdmin.reset();
-                document.getElementById('resultadoConsulta').classList.add('d-none');
-            }
-        } catch (error) {
-            console.error("Error al guardar:", error);
-            alert("Error al conectar con el servidor.");
+        const res = await fetch('/api/guardar', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(datos)
+        });
+        
+        if (res.ok) {
+            alert("Pago registrado correctamente");
+            formAdmin.reset();
         }
     });
 
-    // --- LÓGICA CONSULTA RÁPIDA ---
-    const formConsulta = document.getElementById('formConsulta');
-    const contenedorRes = document.getElementById('resultadoConsulta');
-    const alerta = document.getElementById('alertaEstatus');
-    const btnRenovar = document.getElementById('btnRenovar');
-
-    let socioActual = null; 
-
+    // CONSULTAR SOCIO
     formConsulta.addEventListener('submit', async (e) => {
         e.preventDefault();
         const id = document.getElementById('consultaId').value;
-        
-        try {
-            // Consultamos a Python mediante el método GET
-            const respuesta = await fetch(`/api/consultar/${id}`);
-            
-            if (!respuesta.ok) {
-                alert("El ID ingresado no está registrado en el sistema SQLite.");
-                contenedorRes.classList.add('d-none');
-                return;
-            }
+        const res = await fetch(`/api/consultar/${id}`);
 
-            // Recibimos el cálculo ya procesado por Python
-            const reporte = await respuesta.json();
-            
-            socioActual = { id: id, nombre: reporte.nombre };
-
+        if (res.ok) {
+            const reporte = await res.json();
             document.getElementById('resNombre').textContent = reporte.nombre;
             document.getElementById('resMensaje').textContent = reporte.mensaje;
-            alerta.className = `alert shadow-sm alert-${reporte.estadoBootstrap}`;
-            contenedorRes.classList.remove('d-none');
-
-            // Mostrar botón de renovación SOLO si está vencido
-            if (reporte.estadoBootstrap === "danger") {
-                btnRenovar.classList.remove('d-none');
+            document.getElementById('alertaEstatus').className = `alert shadow-sm alert-${reporte.estadoBootstrap}`;
+            document.getElementById('resultadoConsulta').classList.remove('d-none');
+            
+            const btn = document.getElementById('btnRenovar');
+            if(reporte.estadoBootstrap === "danger") {
+                btn.classList.remove('d-none');
+                btn.onclick = () => {
+                    document.getElementById('adminId').value = id;
+                    document.getElementById('adminNombre').value = reporte.nombre;
+                    document.getElementById('adminFecha').value = new Date().toISOString().split('T')[0];
+                };
             } else {
-                btnRenovar.classList.add('d-none');
+                btn.classList.add('d-none');
             }
-            
-        } catch (error) {
-            console.error("Error en consulta:", error);
-        }
-    });
-
-    // --- LÓGICA BOTÓN "AGREGAR NUEVO PAGO" ---
-    btnRenovar.addEventListener('click', () => {
-        if (socioActual) {
-            document.getElementById('adminId').value = socioActual.id;
-            document.getElementById('adminNombre').value = socioActual.nombre;
-            
-            const hoy = new Date();
-            const anio = hoy.getFullYear();
-            const mes = String(hoy.getMonth() + 1).padStart(2, '0'); 
-            const dia = String(hoy.getDate()).padStart(2, '0');
-            
-            document.getElementById('adminFecha').value = `${anio}-${mes}-${dia}`;
-            document.getElementById('formAdmin').scrollIntoView({ behavior: 'smooth' });
+        } else {
+            alert("Socio no encontrado");
         }
     });
 });
