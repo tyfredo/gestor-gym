@@ -1,17 +1,137 @@
+:root {
+    --primary: #007AFF; /* Azul Mac */
+    --primary-dark: #0056b3;
+    --bg-soft: #f5f5f7;
+    --card-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
 body {
-    background-color: #f4f6f9;
+    background-color: var(--bg-soft);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    overflow-x: hidden;
 }
 
-.card {
-    border: none;
-    border-radius: 12px;
+/* Fondo decorativo */
+.bg-gradient-shapes {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(circle at 10% 20%, rgba(0, 122, 255, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(0, 122, 255, 0.08) 0%, transparent 40%);
+    z-index: -1;
 }
 
-.card-header {
-    border-top-left-radius: 12px !important;
-    border-top-right-radius: 12px !important;
+/* Estilos de Tarjeta Principal */
+.main-card {
+    border-radius: 24px;
+    background: #ffffff;
 }
 
-.alert {
-    transition: all 0.3s ease-in-out;
+.icon-box {
+    width: 48px; height: 48px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 12px; font-size: 1.5rem;
+}
+
+/* Inputs Personalizados */
+.form-control-custom, .form-select-custom {
+    width: 100%; border: 1.5px solid #eee;
+    padding: 12px 16px; border-radius: 12px;
+    background: #fafafa; transition: all 0.3s ease;
+}
+
+.form-control-custom:focus {
+    outline: none; border-color: var(--primary);
+    background: #fff; box-shadow: 0 0 0 4px rgba(0,122,255,0.1);
+}
+
+/* Botón Gradiente */
+.btn-primary-grad {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    border: none; color: white; border-radius: 14px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-primary-grad:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,122,255,0.3);
+}
+
+/* Botón Flotante (FAB) */
+.btn-fab {
+    position: fixed; bottom: 40px; right: 40px;
+    width: 65px; height: 65px; border-radius: 50%;
+    background: #000; color: white; border: none;
+    font-size: 1.5rem; display: flex; align-items: center;
+    justify-content: center; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 100;
+}
+
+.btn-fab:hover {
+    transform: scale(1.1) rotate(5deg);
+    background: var(--primary);
+}
+
+/* Overlay de Búsqueda Estilo Mac */
+.search-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.4); backdrop-filter: blur(20px);
+    display: none; align-items: flex-start; padding-top: 100px;
+    z-index: 1000;
+}
+
+.search-card {
+    background: rgba(255,255,255,0.9);
+    border-radius: 20px; border: 1px solid rgba(255,255,255,0.3);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.3); overflow: hidden;
+}
+
+.search-input {
+    width: 100%; border: none; background: transparent;
+    font-size: 1.25rem; outline: none; padding: 10px 0;
+}
+
+.btn-close-mac {
+    background: #eee; border: none; width: 30px; height: 30px;
+    border-radius: 50%; font-size: 0.8rem; color: #666;
+}
+
+/* Perfil de Socio en Búsqueda */
+.avatar-mac {
+    width: 90px; height: 90px; border-radius: 20px;
+    object-fit: cover; border: 4px solid white;
+}
+
+.status-badge {
+    position: absolute; bottom: -5px; right: -5px;
+    width: 24px; height: 24px; border-radius: 50%;
+    border: 3px solid white;
+}
+
+.status-pill {
+    font-size: 0.75rem; font-weight: 600;
+    color: #666; background: #eee;
+    padding: 6px 12px; border-radius: 20px;
+}
+
+/* Animaciones */
+.animate-scale-up {
+    animation: scaleUp 0.5s ease forwards;
+}
+
+.animate-mac-in {
+    animation: macIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes scaleUp {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes macIn {
+    from { opacity: 0; transform: scale(1.1) translateY(-20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.btn-danger-soft {
+    background: #ffeeee; color: #dc3545; border: none; border-radius: 12px;
 }

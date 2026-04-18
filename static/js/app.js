@@ -1,8 +1,33 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const formAdmin = document.getElementById('formAdmin');
-    const formConsulta = document.getElementById('formConsulta');
+    const btnOpenSearch = document.getElementById('btnOpenSearch');
+    const btnCloseSearch = document.getElementById('btnCloseSearch');
+    const searchOverlay = document.getElementById('searchOverlay');
+    const consultaInput = document.getElementById('consultaId');
 
-    // GUARDAR PAGO
+    // --- MANEJO DEL OVERLAY (MODO MAC) ---
+    const openSearch = () => {
+        searchOverlay.style.display = 'flex';
+        setTimeout(() => consultaInput.focus(), 100);
+    };
+
+    const closeSearch = () => {
+        searchOverlay.style.display = 'none';
+        // Resetear vista de búsqueda al cerrar
+        document.getElementById('searchPlaceholder').classList.remove('d-none');
+        document.getElementById('resultadoConsulta').classList.add('d-none');
+        consultaInput.value = '';
+    };
+
+    btnOpenSearch.addEventListener('click', openSearch);
+    btnCloseSearch.addEventListener('click', closeSearch);
+
+    // Cerrar con tecla ESC
+    document.addEventListener('keydown', (e) => {
+        if (e.key === "Escape") closeSearch();
+    });
+
+    // --- PANEL ADMIN: GUARDAR PAGO ---
+    const formAdmin = document.getElementById('formAdmin');
     formAdmin.addEventListener('submit', async (e) => {
         e.preventDefault();
         const datos = {
@@ -19,37 +44,57 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         if (res.ok) {
-            alert("Pago registrado correctamente");
+            alert("✅ Registro actualizado con éxito.");
             formAdmin.reset();
         }
     });
 
-    // CONSULTAR SOCIO
+    // --- CONSULTA SPOTLIGHT ---
+    const formConsulta = document.getElementById('formConsulta');
     formConsulta.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const id = document.getElementById('consultaId').value;
-        const res = await fetch(`/api/consultar/${id}`);
+        const id = consultaInput.value.toUpperCase();
+        
+        try {
+            const res = await fetch(`/api/consultar/${id}`);
 
-        if (res.ok) {
-            const reporte = await res.json();
-            document.getElementById('resNombre').textContent = reporte.nombre;
-            document.getElementById('resMensaje').textContent = reporte.mensaje;
-            document.getElementById('alertaEstatus').className = `alert shadow-sm alert-${reporte.estadoBootstrap}`;
-            document.getElementById('resultadoConsulta').classList.remove('d-none');
-            
-            const btn = document.getElementById('btnRenovar');
-            if(reporte.estadoBootstrap === "danger") {
-                btn.classList.remove('d-none');
-                btn.onclick = () => {
+            if (res.ok) {
+                const reporte = await res.json();
+                
+                // Ocultar placeholder y mostrar resultado
+                document.getElementById('searchPlaceholder').classList.add('d-none');
+                const resultadoDiv = document.getElementById('resultadoConsulta');
+                resultadoDiv.classList.remove('d-none');
+
+                document.getElementById('resNombre').textContent = reporte.nombre;
+                document.getElementById('resMensaje').textContent = reporte.mensaje;
+                document.getElementById('resAvatar').src = `https://i.pravatar.cc/150?u=${id}`;
+
+                const badge = document.getElementById('resBadge');
+                const actionBox = document.getElementById('actionBox');
+
+                if(reporte.estadoBootstrap === "danger") {
+                    badge.style.backgroundColor = "#dc3545";
+                    actionBox.classList.remove('d-none');
+                } else {
+                    badge.style.backgroundColor = "#198754";
+                    actionBox.classList.add('d-none');
+                }
+
+                // Acción de renovación
+                document.getElementById('btnRenovar').onclick = () => {
+                    closeSearch();
                     document.getElementById('adminId').value = id;
                     document.getElementById('adminNombre').value = reporte.nombre;
                     document.getElementById('adminFecha').value = new Date().toISOString().split('T')[0];
+                    document.getElementById('formAdmin').scrollIntoView({ behavior: 'smooth' });
                 };
+
             } else {
-                btn.classList.add('d-none');
+                alert("Socio no encontrado.");
             }
-        } else {
-            alert("Socio no encontrado");
+        } catch (error) {
+            console.error(error);
         }
     });
 });
