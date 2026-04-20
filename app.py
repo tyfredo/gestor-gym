@@ -18,7 +18,6 @@ def index():
 @app.route('/api/consultar/<id_socio>', methods=['GET'])
 def consultar_socio(id_socio):
     conn = get_db_connection()
-    # JOIN para traer el Plan y el Nombre del Recepcionista que cobró el último pago
     socio = conn.execute('''
         SELECT s.nombre_completo, p.fecha_pago, m.nombre_plan, r.nombre AS nombre_recep
         FROM Socios s 
@@ -43,11 +42,11 @@ def consultar_socio(id_socio):
 
     if diferencia > 30:
         titulo = "¡Suscripción Vencida!"
-        mensaje = f"Socio: {nombre}\nPlan: {plan}\nAtendido por: {recepcionista}\n(Vencido por {diferencia - 30} días)"
+        mensaje = f"Plan contratado: {plan}\nAtendido por: {recepcionista}\n(Vencido por {diferencia - 30} días)"
         estado = "danger"
     else:
         titulo = "¡Suscripción Al Día!"
-        mensaje = f"Socio: {nombre}\nPlan: {plan}\nAtendido por: {recepcionista}\n(Faltan {30 - diferencia} días)"
+        mensaje = f"Plan contratado: {plan}\nAtendido por: {recepcionista}\n(Faltan {30 - diferencia} días)"
         estado = "success"
 
     return jsonify({
@@ -63,19 +62,23 @@ def guardar_socio():
     id_s = datos['id']
     nom = datos['nombre']
     fec = datos['fecha']
-    id_r = datos['id_recepcionista'] # Recibimos el recepcionista de la web
+    id_r = datos['id_recepcionista']
+    id_m = datos['id_membresia'] # Recibimos el plan elegido
 
     conn = get_db_connection()
     try:
-        # Actualizar o insertar socio
         existe = conn.execute('SELECT 1 FROM Socios WHERE id_socio = ?', (id_s,)).fetchone()
-        if existe:
-            conn.execute('UPDATE Socios SET nombre_completo = ? WHERE id_socio = ?', (nom, id_s))
-        else:
-            conn.execute('INSERT INTO Socios (id_socio, nombre_completo, id_membresia) VALUES (?, ?, 1)', (id_s, nom))
         
-        # Registrar el pago con el ID del recepcionista real
+        if existe:
+            # Si ya existe, actualizamos nombre y su membresía
+            conn.execute('UPDATE Socios SET nombre_completo = ?, id_membresia = ? WHERE id_socio = ?', (nom, id_m, id_s))
+        else:
+            # Si es nuevo, lo guardamos con la membresía elegida
+            conn.execute('INSERT INTO Socios (id_socio, nombre_completo, id_membresia) VALUES (?, ?, ?)', (id_s, nom, id_m))
+        
+        # Siempre se registra el pago
         conn.execute('INSERT INTO Pagos (id_socio, fecha_pago, id_recepcionista) VALUES (?, ?, ?)', (id_s, fec, id_r))
+        
         conn.commit()
         return jsonify({"success": True})
     except Exception as e:

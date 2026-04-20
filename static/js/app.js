@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchOverlay = document.getElementById('searchOverlay');
     const consultaInput = document.getElementById('consultaId');
 
-    // --- MANEJO DEL OVERLAY (MODO MAC) ---
     const openSearch = () => {
         searchOverlay.style.display = 'flex';
         setTimeout(() => consultaInput.focus(), 100);
@@ -12,7 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const closeSearch = () => {
         searchOverlay.style.display = 'none';
-        // Resetear vista de búsqueda al cerrar
         document.getElementById('searchPlaceholder').classList.remove('d-none');
         document.getElementById('resultadoConsulta').classList.add('d-none');
         consultaInput.value = '';
@@ -21,18 +19,19 @@ document.addEventListener('DOMContentLoaded', () => {
     btnOpenSearch.addEventListener('click', openSearch);
     btnCloseSearch.addEventListener('click', closeSearch);
 
-    // Cerrar con tecla ESC
     document.addEventListener('keydown', (e) => {
         if (e.key === "Escape") closeSearch();
     });
 
-    // --- PANEL ADMIN: GUARDAR PAGO ---
     const formAdmin = document.getElementById('formAdmin');
     formAdmin.addEventListener('submit', async (e) => {
         e.preventDefault();
+        
+        // Aquí agregamos la captura de la membresía elegida
         const datos = {
             id: document.getElementById('adminId').value,
             nombre: document.getElementById('adminNombre').value,
+            id_membresia: document.getElementById('adminMembresia').value,
             fecha: document.getElementById('adminFecha').value,
             id_recepcionista: document.getElementById('adminRecepcionista').value
         };
@@ -46,10 +45,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (res.ok) {
             alert("✅ Registro actualizado con éxito.");
             formAdmin.reset();
+        } else {
+            alert("❌ Ocurrió un error al guardar.");
         }
     });
 
-    // --- CONSULTA SPOTLIGHT ---
     const formConsulta = document.getElementById('formConsulta');
     formConsulta.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -61,7 +61,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (res.ok) {
                 const reporte = await res.json();
                 
-                // Ocultar placeholder y mostrar resultado
                 document.getElementById('searchPlaceholder').classList.add('d-none');
                 const resultadoDiv = document.getElementById('resultadoConsulta');
                 resultadoDiv.classList.remove('d-none');
@@ -81,13 +80,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     actionBox.classList.add('d-none');
                 }
 
-                // Acción de renovación
                 document.getElementById('btnRenovar').onclick = () => {
                     closeSearch();
                     document.getElementById('adminId').value = id;
                     document.getElementById('adminNombre').value = reporte.nombre;
                     document.getElementById('adminFecha').value = new Date().toISOString().split('T')[0];
-                    document.getElementById('formAdmin').scrollIntoView({ behavior: 'smooth' });
                 };
 
             } else {

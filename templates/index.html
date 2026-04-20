@@ -34,10 +34,23 @@
                                 <label class="small fw-bold text-muted">IDENTIFICADOR</label>
                                 <input type="text" id="adminId" class="form-control-custom" placeholder="Ej: SOC-001" required>
                             </div>
+                            
                             <div class="custom-input-group mb-3">
                                 <label class="small fw-bold text-muted">NOMBRE DEL CLIENTE</label>
                                 <input type="text" id="adminNombre" class="form-control-custom" placeholder="Nombre completo" required>
                             </div>
+
+                            <div class="custom-input-group mb-3">
+                                <label class="small fw-bold text-muted">PLAN DE MEMBRESÍA</label>
+                                <select id="adminMembresia" class="form-select-custom">
+                                    <option value="1">Básica</option>
+                                    <option value="2">Premium</option>
+                                    <option value="3">Anual</option>
+                                    <option value="4">Estudiante</option>
+                                    <option value="5">VIP</option>
+                                </select>
+                            </div>
+
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label class="small fw-bold text-muted">RECEPCIONISTA</label>
